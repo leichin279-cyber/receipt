@@ -167,7 +167,7 @@
             <div class="pwa-name">영수증 다이어리</div>
             <div class="pwa-url" id="pwa-url-display">diary-app.vercel.app</div>
           </div>
-          <button class="pwa-install-btn" id="btn-pwa-install">설치</button>
+          <button class="pwa-install-btn" id="btn-pwa-install" disabled>설치 준비 중</button>
         </div>
 
         <div class="install-status" id="install-status"></div>
@@ -247,19 +247,48 @@
   <!-- 하단 탭바 -->
   <nav class="tabbar" id="tabbar">
     <button class="tab on" data-page="pg-todo">
-      <span class="tab-icon">✏️</span>
+      <span class="tab-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="2" width="16" height="18" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          <path d="M7 7h8M7 11h8M7 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="16.5" cy="15.5" r="3.5" fill="currentColor"/>
+          <path d="M15 15.5l1 1 1.5-1.5" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
       <span class="tab-label">오늘</span>
     </button>
     <button class="tab" data-page="pg-sched">
-      <span class="tab-icon">⏱</span>
+      <span class="tab-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="11" cy="11" r="8.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          <path d="M11 6.5V11l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="11" cy="11" r="1" fill="currentColor"/>
+        </svg>
+      </span>
       <span class="tab-label">스케줄</span>
     </button>
     <button class="tab" data-page="pg-cal">
-      <span class="tab-icon">📅</span>
+      <span class="tab-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2.5" y="4.5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          <path d="M7 2.5v4M15 2.5v4M2.5 9h17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="7.5" cy="13" r="1.2" fill="currentColor"/>
+          <circle cx="11" cy="13" r="1.2" fill="currentColor"/>
+          <circle cx="14.5" cy="13" r="1.2" fill="currentColor"/>
+          <circle cx="7.5" cy="16.5" r="1.2" fill="currentColor"/>
+          <circle cx="11" cy="16.5" r="1.2" fill="currentColor"/>
+        </svg>
+      </span>
       <span class="tab-label">달력</span>
     </button>
     <button class="tab" data-page="pg-install">
-      <span class="tab-icon">📲</span>
+      <span class="tab-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="2" width="14" height="18" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          <path d="M11 7v7M8.5 11.5l2.5 2.5 2.5-2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 17h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </span>
       <span class="tab-label">설치</span>
     </button>
   </nav>

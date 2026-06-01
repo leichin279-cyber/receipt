@@ -807,3 +807,54 @@ body {
   padding: 16px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
+
+/* ── To-Do 수정·삭제 버튼 ── */
+.ti { position: relative; }
+.ti-txt { flex: 1; }
+.ti-actions {
+  display: flex; gap: 4px; align-items: center;
+  opacity: 0; transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+.ti:hover .ti-actions,
+.ti:focus-within .ti-actions { opacity: 1; }
+/* 터치 기기: 항상 표시 */
+@media (hover: none) { .ti-actions { opacity: 1; } }
+.ti-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 13px; padding: 2px 3px; line-height: 1;
+  border-radius: 4px; transition: background 0.1s;
+  color: var(--text3);
+}
+.ti-btn:hover { background: var(--bg2); }
+.ti-btn.del:hover { background: #fff0f0; }
+
+/* ── 핵심 3가지 input ── */
+.prio-inp {
+  width: 100%; font-size: 12px; font-family: inherit;
+  border: none; background: transparent;
+  color: var(--text); outline: none;
+}
+.prio-inp::placeholder { color: var(--text3); }
+.prio-mirror { font-size: 12px; color: var(--text2); font-family: inherit; }
+
+/* ── 탭바 귀여운 아이콘 ── */
+.tab-icon {
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 10px;
+  transition: all 0.18s cubic-bezier(0.34,1.56,0.64,1);
+  color: var(--text3);
+}
+.tab:hover .tab-icon { color: var(--text2); transform: translateY(-1px); }
+.tab.on .tab-icon {
+  background: var(--text);
+  color: var(--bg);
+  transform: translateY(-2px) scale(1.08);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+}
+.tab-label {
+  font-size: 10px; letter-spacing: 0.3px; margin-top: 2px;
+  transition: color 0.15s;
+}
+.tab.on .tab-label { color: var(--text); font-weight: 700; }
