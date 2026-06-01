@@ -311,7 +311,9 @@
     var signClone = signCard.cloneNode(true);
 
     // 서명 캔버스 이미지 복사
-    var origCanvas = qs('#scv');
+    var origCanvas = qs('#scv');  // modal canvas
+    var previewCanvas = qs('#scv-preview');
+    if (!origCanvas || (origCanvas.width === 0)) origCanvas = previewCanvas;
     var cloneCanvas = signClone.querySelector('canvas');
     if (cloneCanvas && origCanvas) {
       cloneCanvas.width = origCanvas.width; cloneCanvas.height = origCanvas.height;
@@ -369,24 +371,179 @@
   /* ══════════════════════════════
      서명
   ══════════════════════════════ */
+  /* ── 서명 모달 & 캔버스 ──
+     핵심: getBoundingClientRect()로 실제 화면 좌표 구하고
+           canvas CSS 크기 vs 내부 해상도 비율(scaleX,scaleY)로 보정
+  */
   function initSign() {
     var cv = qs('#scv'); if (!cv) return;
-    // 반응형 캔버스 크기
-    cv.width = cv.parentElement.offsetWidth - 28 || 300;
-    sCtx = cv.getContext('2d');
-    sCtx.strokeStyle = '#333'; sCtx.lineWidth = 1.5; sCtx.lineCap = 'round';
-    function pos(e) { var r = cv.getBoundingClientRect(); var s = e.touches ? e.touches[0] : e; return [s.clientX - r.left, s.clientY - r.top]; }
-    cv.addEventListener('mousedown', function (e) { signing = true; var p = pos(e); sCtx.beginPath(); sCtx.moveTo(p[0], p[1]); });
-    cv.addEventListener('mousemove', function (e) { if (!signing) return; var p = pos(e); sCtx.lineTo(p[0], p[1]); sCtx.stroke(); });
-    cv.addEventListener('mouseup', function () { signing = false; });
-    cv.addEventListener('mouseleave', function () { signing = false; });
-    cv.addEventListener('touchstart', function (e) { e.preventDefault(); signing = true; var p = pos(e); sCtx.beginPath(); sCtx.moveTo(p[0], p[1]); }, { passive: false });
-    cv.addEventListener('touchmove', function (e) { e.preventDefault(); if (!signing) return; var p = pos(e); sCtx.lineTo(p[0], p[1]); sCtx.stroke(); }, { passive: false });
-    cv.addEventListener('touchend', function () { signing = false; });
+    setupSignCanvas(cv);
+  }
+
+  function setupSignCanvas(cv) {
+    // 캔버스 내부 해상도 = CSS 크기 × devicePixelRatio (고DPI 대응)
+    var dpr = window.devicePixelRatio || 1;
+    var rect = cv.getBoundingClientRect();
+    var cssW = rect.width || cv.parentElement.clientWidth || 360;
+    var cssH = rect.height || 200;
+    cv.width  = Math.round(cssW  * dpr);
+    cv.height = Math.round(cssH * dpr);
+    var ctx = cv.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth   = 2;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+    sCtx = ctx;
+
+    // 좌표 보정: getBoundingClientRect 기준 (스크롤·transform 모두 반영)
+    function getPos(e) {
+      var r   = cv.getBoundingClientRect();
+      var src = (e.touches && e.touches.length > 0) ? e.touches[0] : e;
+      return {
+        x: src.clientX - r.left,
+        y: src.clientY - r.top
+      };
+    }
+
+    var drawing = false;
+
+    function onStart(e) {
+      e.preventDefault();
+      drawing = true;
+      var p = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+    }
+    function onMove(e) {
+      e.preventDefault();
+      if (!drawing) return;
+      var p = getPos(e);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+    }
+    function onEnd(e) { drawing = false; ctx.beginPath(); }
+
+    // 기존 이벤트 제거를 위해 clone
+    var fresh = cv.cloneNode(false);
+    cv.parentNode.replaceChild(fresh, cv);
+    cv = fresh;
+    sCtx = null; // reset
+
+    var ctx2 = cv.getContext('2d');
+    ctx2.scale(dpr, dpr);
+    ctx2.strokeStyle = '#1a1a1a';
+    ctx2.lineWidth   = 2;
+    ctx2.lineCap     = 'round';
+    ctx2.lineJoin    = 'round';
+    sCtx = ctx2;
+
+    cv.addEventListener('mousedown',  function(e){ e.preventDefault(); drawing=true; var p=getPos2(cv,e); ctx2.beginPath(); ctx2.moveTo(p.x,p.y); });
+    cv.addEventListener('mousemove',  function(e){ e.preventDefault(); if(!drawing)return; var p=getPos2(cv,e); ctx2.lineTo(p.x,p.y); ctx2.stroke(); ctx2.beginPath(); ctx2.moveTo(p.x,p.y); });
+    cv.addEventListener('mouseup',    function(){ drawing=false; ctx2.beginPath(); });
+    cv.addEventListener('mouseleave', function(){ drawing=false; ctx2.beginPath(); });
+    cv.addEventListener('touchstart', function(e){ e.preventDefault(); drawing=true; var p=getPos2(cv,e); ctx2.beginPath(); ctx2.moveTo(p.x,p.y); }, {passive:false});
+    cv.addEventListener('touchmove',  function(e){ e.preventDefault(); if(!drawing)return; var p=getPos2(cv,e); ctx2.lineTo(p.x,p.y); ctx2.stroke(); ctx2.beginPath(); ctx2.moveTo(p.x,p.y); }, {passive:false});
+    cv.addEventListener('touchend',   function(){ drawing=false; ctx2.beginPath(); });
+    cv.addEventListener('touchcancel',function(){ drawing=false; });
+
+    return cv;
+  }
+
+  // 좌표 계산 핵심: clientX/Y - getBoundingClientRect (스크롤 독립)
+  function getPos2(cv, e) {
+    var r   = cv.getBoundingClientRect();
+    var src = (e.touches && e.touches.length > 0) ? e.touches[0]
+            : (e.changedTouches && e.changedTouches.length > 0) ? e.changedTouches[0]
+            : e;
+    return { x: src.clientX - r.left, y: src.clientY - r.top };
+  }
+
+  function openSignModal() {
+    var modal = qs('#ov-sign');
+    modal.classList.add('on');
+    // 모달 열린 후 canvas 크기 재설정
+    setTimeout(function () {
+      var cv = qs('#scv');
+      if (!cv) return;
+      var dpr = window.devicePixelRatio || 1;
+      var w = cv.parentElement.clientWidth || 360;
+      var h = 200;
+      cv.style.width  = w + 'px';
+      cv.style.height = h + 'px';
+      cv.width  = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      sCtx = cv.getContext('2d');
+      sCtx.scale(dpr, dpr);
+      sCtx.strokeStyle = '#1a1a1a';
+      sCtx.lineWidth   = 2.5;
+      sCtx.lineCap     = 'round';
+      sCtx.lineJoin    = 'round';
+
+      // 이벤트 중복 방지: 새 canvas로 교체
+      var fresh = cv.cloneNode(false);
+      fresh.style.width  = w + 'px';
+      fresh.style.height = h + 'px';
+      fresh.width  = Math.round(w * dpr);
+      fresh.height = Math.round(h * dpr);
+      cv.parentNode.replaceChild(fresh, cv);
+
+      var ctx = fresh.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.strokeStyle = '#1a1a1a';
+      ctx.lineWidth   = 2.5;
+      ctx.lineCap     = 'round';
+      ctx.lineJoin    = 'round';
+      sCtx = ctx;
+
+      var drawing = false;
+      fresh.addEventListener('mousedown',  function(e){ e.preventDefault(); drawing=true; var p=getPos2(fresh,e); ctx.beginPath(); ctx.moveTo(p.x,p.y); });
+      fresh.addEventListener('mousemove',  function(e){ if(!drawing)return; var p=getPos2(fresh,e); ctx.lineTo(p.x,p.y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(p.x,p.y); });
+      fresh.addEventListener('mouseup',    function(){ drawing=false; });
+      fresh.addEventListener('mouseleave', function(){ drawing=false; });
+      fresh.addEventListener('touchstart', function(e){ e.preventDefault(); drawing=true; var p=getPos2(fresh,e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }, {passive:false});
+      fresh.addEventListener('touchmove',  function(e){ e.preventDefault(); if(!drawing)return; var p=getPos2(fresh,e); ctx.lineTo(p.x,p.y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(p.x,p.y); }, {passive:false});
+      fresh.addEventListener('touchend',   function(){ drawing=false; });
+    }, 80);
+  }
+
+  function closeSignModal(save) {
+    if (save) {
+      // 서명 내용을 미리보기 캔버스에 복사
+      var src = qs('#scv');
+      var dst = qs('#scv-preview');
+      if (src && dst) {
+        var hint = qs('#sign-preview-hint');
+        dst.width = dst.offsetWidth * (window.devicePixelRatio || 1);
+        dst.height = dst.offsetHeight * (window.devicePixelRatio || 1);
+        var dctx = dst.getContext('2d');
+        dctx.clearRect(0, 0, dst.width, dst.height);
+        dctx.drawImage(src, 0, 0, dst.width, dst.height);
+        if (hint) hint.style.display = 'none';
+      }
+    }
+    qs('#ov-sign').classList.remove('on');
   }
 
   function bindSignBtn() {
-    var btn = qs('#sign-clr'); if (btn) btn.addEventListener('click', function () { if (sCtx) sCtx.clearRect(0, 0, qs('#scv').width, qs('#scv').height); });
+    // 서명 카드 클릭 → 모달 오픈
+    var card = qs('#sign-preview-card');
+    var prev = qs('#scv-preview');
+    if (card) card.addEventListener('click', openSignModal);
+    if (prev) prev.addEventListener('click', openSignModal);
+
+    // 모달 버튼
+    var clrBtn = qs('#sign-modal-clr');
+    var okBtn  = qs('#sign-modal-ok');
+    if (clrBtn) clrBtn.addEventListener('click', function () {
+      var cv = qs('#scv'); if (!cv || !sCtx) return;
+      sCtx.clearRect(0, 0, cv.offsetWidth, cv.offsetHeight);
+    });
+    if (okBtn) okBtn.addEventListener('click', function () { closeSignModal(true); });
+    // 배경 클릭으로 닫기
+    qs('#ov-sign').addEventListener('click', function(e){ if(e.target===this) closeSignModal(false); });
   }
 
   /* ══════════════════════════════
@@ -651,25 +808,56 @@
   ══════════════════════════════ */
   function bindPWA() {
     window.addEventListener('beforeinstallprompt', function (e) {
-      e.preventDefault(); deferredInstall = e;
-      qs('#install-status').textContent = '설치 준비 완료!';
+      e.preventDefault();
+      deferredInstall = e;
+      updateInstallUI(true);
     });
-    qs('#btn-pwa-install').addEventListener('click', function () {
+
+    qs('#btn-pwa-install').addEventListener('click', triggerInstall);
+
+    // 팝업 스타일 설치 버튼도 같은 동작
+    var popupBtn = qs('#btn-pwa-popup');
+    if (popupBtn) popupBtn.addEventListener('click', triggerInstall);
+
+    window.addEventListener('appinstalled', function () {
+      toast('앱 설치 완료! 🎉');
+      updateInstallUI(false, true);
+    });
+
+    // 이미 설치됐으면 숨기기
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      updateInstallUI(false, true);
+    }
+
+    function triggerInstall() {
       if (deferredInstall) {
         deferredInstall.prompt();
         deferredInstall.userChoice.then(function (r) {
-          if (r.outcome === 'accepted') { toast('앱이 설치됐습니다! 🎉'); qs('#install-status').textContent = '설치 완료!'; }
-          else { qs('#install-status').textContent = '설치를 취소했습니다.'; }
+          if (r.outcome === 'accepted') { toast('앱이 설치됐습니다! 🎉'); updateInstallUI(false, true); }
+          else { toast('설치가 취소됐습니다'); }
           deferredInstall = null;
         });
       } else {
-        toast('위의 수동 설치 방법을 따라주세요');
-        qs('#install-status').textContent = '아래 수동 안내를 확인해주세요';
+        // 이미 설치됐거나 지원 안 할 때
+        toast('아래 수동 설치 방법을 따라주세요 👇');
       }
-    });
-    window.addEventListener('appinstalled', function () {
-      toast('앱 설치 완료! 🎉'); qs('#install-status').textContent = '설치 완료!';
-    });
+    }
+
+    function updateInstallUI(ready, done) {
+      var popup = qs('.pwa-install-popup');
+      var btn   = qs('#btn-pwa-install');
+      var popBtn = qs('#btn-pwa-popup');
+      var status = qs('#install-status');
+      if (done) {
+        if (popup) popup.style.display = 'none';
+        if (btn) { btn.textContent = '✅ 설치됨'; btn.disabled = true; }
+        if (status) status.textContent = '이미 설치된 앱입니다';
+      } else if (ready) {
+        if (btn) btn.textContent = '📲 홈 화면에 설치하기';
+        if (popBtn) { popBtn.disabled = false; popBtn.textContent = '설치'; }
+        if (status) status.textContent = '설치 준비 완료!';
+      }
+    }
   }
 
   /* ══════════════════════════════
@@ -714,3 +902,9 @@
   }
 
 })();
+
+  /* ── 설치 탭 URL 표시 ── */
+  (function () {
+    var el = document.getElementById('pwa-url-display');
+    if (el) el.textContent = location.hostname || 'diary-app.vercel.app';
+  })();

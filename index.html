@@ -86,10 +86,11 @@
       </div><!-- /receipt-area -->
 
       <!-- 서명란 -->
-      <div class="sign-card">
-        <div class="sign-label">SIGNATURE</div>
-        <canvas id="scv" width="300" height="70"></canvas>
-        <button id="sign-clr" class="btn-ghost-sm">지우기</button>
+      <!-- 서명 미리보기 (클릭하면 모달 오픈) -->
+      <div class="sign-card" id="sign-preview-card">
+        <div class="sign-label">SIGNATURE <span style="font-size:10px;color:var(--text3);">(탭하여 서명)</span></div>
+        <canvas id="scv-preview" width="400" height="80" style="cursor:pointer;"></canvas>
+        <div class="sign-preview-hint" id="sign-preview-hint">여기를 탭하여 서명하세요 ✍️</div>
       </div>
 
       <!-- 하단 버튼 -->
@@ -152,27 +153,41 @@
   <div class="pg" id="pg-install">
     <div class="pg-inner">
       <div class="page-title">앱 설치</div>
+
+      <!-- 브라우저 설치 팝업 스타일 -->
+      <div class="pwa-install-popup">
+        <div class="pwa-icon">📋</div>
+        <div class="pwa-info">
+          <div class="pwa-name">영수증 다이어리</div>
+          <div class="pwa-url" id="pwa-url-display"></div>
+        </div>
+        <button class="pwa-install-btn" id="btn-pwa-popup">설치</button>
+      </div>
+
+      <div class="install-status" id="install-status"></div>
+
+      <button class="btn-primary btn-install" id="btn-pwa-install" style="margin-bottom:16px;">
+        📲 홈 화면에 설치하기
+      </button>
+
       <div class="install-card">
-        <div class="install-icon">📋</div>
-        <h2 class="install-title">영수증 다이어리</h2>
-        <p class="install-desc">홈 화면에 앱을 설치하면<br>언제든 빠르게 접근할 수 있어요</p>
-        <button class="btn-primary btn-install" id="btn-pwa-install">
-          📲 홈 화면에 설치하기
-        </button>
-        <div class="install-status" id="install-status"></div>
         <div class="install-guide">
-          <div class="guide-title">수동 설치 방법</div>
+          <div class="guide-title">📖 수동 설치 방법</div>
           <div class="guide-item">
-            <span class="guide-os">iOS Safari</span>
-            <span>하단 공유 버튼 → "홈 화면에 추가"</span>
+            <span class="guide-os">🍎 iOS Safari</span>
+            <span>화면 하단 공유(□↑) → "홈 화면에 추가" 탭</span>
           </div>
           <div class="guide-item">
-            <span class="guide-os">Android Chrome</span>
+            <span class="guide-os">🤖 Android Chrome</span>
             <span>우상단 메뉴(⋮) → "앱 설치" 또는 "홈 화면에 추가"</span>
           </div>
           <div class="guide-item">
-            <span class="guide-os">PC Chrome/Edge</span>
-            <span>주소창 우측 설치 아이콘(⊕) 클릭</span>
+            <span class="guide-os">💻 PC Chrome</span>
+            <span>주소창 오른쪽 ⊕ 아이콘 클릭 → 설치</span>
+          </div>
+          <div class="guide-item">
+            <span class="guide-os">💻 PC Edge</span>
+            <span>주소창 오른쪽 앱 아이콘 클릭 → 설치</span>
           </div>
         </div>
       </div>
@@ -206,6 +221,20 @@
     </div>
   </div>
 
+
+  <!-- 서명 모달 -->
+  <div class="modal-backdrop" id="ov-sign">
+    <div class="modal-box modal-sign">
+      <div class="modal-title">✍️ 서명</div>
+      <div class="sign-modal-wrap">
+        <canvas id="scv" width="400" height="160"></canvas>
+      </div>
+      <div class="mbs">
+        <button id="sign-modal-clr">다시 쓰기</button>
+        <button class="mok" id="sign-modal-ok">완료</button>
+      </div>
+    </div>
+  </div>
   <!-- 토스트 -->
   <div class="toast" id="toast"></div>
 
