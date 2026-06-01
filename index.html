@@ -153,43 +153,46 @@
   <div class="pg" id="pg-install">
     <div class="pg-inner">
       <div class="page-title">앱 설치</div>
+      <div class="install-page-wrap">
 
-      <!-- 브라우저 설치 팝업 스타일 -->
-      <div class="pwa-install-popup">
-        <div class="pwa-icon">📋</div>
-        <div class="pwa-info">
-          <div class="pwa-name">영수증 다이어리</div>
-          <div class="pwa-url" id="pwa-url-display"></div>
+        <!-- 이미 설치됨 배너 -->
+        <div class="installed-banner" id="installed-banner">
+          ✅ 앱이 설치되어 있습니다
         </div>
-        <button class="pwa-install-btn" id="btn-pwa-popup">설치</button>
-      </div>
 
-      <div class="install-status" id="install-status"></div>
+        <!-- 브라우저 스타일 원클릭 설치 팝업 -->
+        <div class="pwa-install-popup" id="pwa-install-popup">
+          <div class="pwa-icon">📋</div>
+          <div class="pwa-info">
+            <div class="pwa-name">영수증 다이어리</div>
+            <div class="pwa-url" id="pwa-url-display">diary-app.vercel.app</div>
+          </div>
+          <button class="pwa-install-btn" id="btn-pwa-install">설치</button>
+        </div>
 
-      <button class="btn-primary btn-install" id="btn-pwa-install" style="margin-bottom:16px;">
-        📲 홈 화면에 설치하기
-      </button>
+        <div class="install-status" id="install-status"></div>
 
-      <div class="install-card">
-        <div class="install-guide">
-          <div class="guide-title">📖 수동 설치 방법</div>
+        <!-- 수동 설치 가이드 -->
+        <div class="install-guide-card">
+          <div class="install-guide-title">설치 방법 안내</div>
           <div class="guide-item">
-            <span class="guide-os">🍎 iOS Safari</span>
-            <span>화면 하단 공유(□↑) → "홈 화면에 추가" 탭</span>
+            <span class="guide-os-tag">🍎 iOS</span>
+            <span class="guide-desc">Safari에서 열기 → 하단 공유(□↑) 버튼 → <strong>"홈 화면에 추가"</strong></span>
           </div>
           <div class="guide-item">
-            <span class="guide-os">🤖 Android Chrome</span>
-            <span>우상단 메뉴(⋮) → "앱 설치" 또는 "홈 화면에 추가"</span>
+            <span class="guide-os-tag">🤖 Android</span>
+            <span class="guide-desc">Chrome 우상단 메뉴(⋮) → <strong>"앱 설치"</strong> 또는 "홈 화면에 추가"</span>
           </div>
           <div class="guide-item">
-            <span class="guide-os">💻 PC Chrome</span>
-            <span>주소창 오른쪽 ⊕ 아이콘 클릭 → 설치</span>
+            <span class="guide-os-tag">💻 Chrome</span>
+            <span class="guide-desc">주소창 오른쪽 <strong>⊕ 설치 아이콘</strong> 클릭 → 설치</span>
           </div>
           <div class="guide-item">
-            <span class="guide-os">💻 PC Edge</span>
-            <span>주소창 오른쪽 앱 아이콘 클릭 → 설치</span>
+            <span class="guide-os-tag">💻 Edge</span>
+            <span class="guide-desc">주소창 오른쪽 <strong>앱 아이콘</strong> 클릭 → 설치</span>
           </div>
         </div>
+
       </div>
     </div>
   </div>

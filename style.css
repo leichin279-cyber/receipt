@@ -362,34 +362,51 @@ body {
 /* ══════════════════════════════
    스케줄 타임라인
 ══════════════════════════════ */
-.st-outer { margin-bottom: 4px; }
+.st-outer {
+  margin-bottom: 4px;
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+}
 .st-wrap {
   display: flex;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--bg);
-  overflow: visible;  /* 시간 라벨 잘림 방지 */
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+  gap: 0;
 }
 .st-ax {
-  flex-shrink: 0; width: 46px; position: relative;
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
+  flex-shrink: 0; width: 52px; position: relative;
+  background: transparent;
+  border-right: none;
   border-radius: 4px 0 0 4px;
+  padding-top: 0;
 }
 .st-axl {
-  position: absolute; right: 6px;
-  font-size: 9px; color: var(--text3);
+  position: absolute; right: 8px;
+  font-size: 10px; color: var(--text3);
   transform: translateY(-50%); white-space: nowrap; line-height: 1;
-  user-select: none;
+  user-select: none; font-variant-numeric: tabular-nums;
+  letter-spacing: -0.3px;
 }
 .st-cv {
   flex: 1; position: relative;
-  background: var(--bg); border-radius: 0 4px 4px 0;
+  background: var(--bg);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  min-height: 100px;
 }
 .st-hl {
   position: absolute; left: 0; right: 0;
-  border-top: 1px dotted var(--border);
+  border-top: 1px solid var(--border);
   pointer-events: none;
+  opacity: 0.6;
+}
+.st-hl.half {
+  border-top-style: dashed;
+  opacity: 0.3;
 }
 .sb {
   position: absolute; left: 2px; right: 2px;
@@ -408,7 +425,7 @@ body {
 .sb .sbm:active { cursor: grabbing; }
 .sb .rht { position: absolute; left: 0; right: 0; top: 0; height: 8px; cursor: ns-resize; z-index: 3; }
 .sb .rhb { position: absolute; left: 0; right: 0; bottom: 0; height: 8px; cursor: ns-resize; z-index: 3; }
-.hint { font-size: 10px; color: var(--text3); margin-top: 5px; line-height: 1.7; }
+.hint { font-size: 10px; color: var(--text3); margin-top: 14px; margin-bottom: 4px; line-height: 1.8; padding: 10px 12px; background: var(--bg2); border-radius: 6px; border: 1px solid var(--border); }
 
 /* ══════════════════════════════
    달력
@@ -670,42 +687,117 @@ body {
 /* ══════════════════════════════
    PWA 설치 카드 개선
 ══════════════════════════════ */
+/* ── PWA 설치 탭 ── */
+.install-page-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 브라우저 스타일 설치 팝업 */
 .pwa-install-popup {
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 14px;
+  padding: 16px 18px;
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 .pwa-icon {
-  width: 54px; height: 54px;
-  border-radius: 12px;
+  width: 56px; height: 56px;
+  border-radius: 14px;
   background: #1a1a1a;
   display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
+  font-size: 30px;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
-.pwa-info { flex: 1; }
-.pwa-info .pwa-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
-.pwa-info .pwa-url { font-size: 11px; color: var(--text3); }
+.pwa-info { flex: 1; min-width: 0; }
+.pwa-info .pwa-name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 3px; letter-spacing: -0.3px; }
+.pwa-info .pwa-url { font-size: 11px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pwa-install-btn {
   background: #0071e3;
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 13px;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   font-family: inherit;
+  transition: background 0.15s, transform 0.1s;
+  flex-shrink: 0;
 }
-.pwa-install-btn:hover { background: #0062c4; }
-.pwa-install-btn:disabled { background: #ccc; cursor: not-allowed; }
+.pwa-install-btn:hover { background: #0062c4; transform: scale(1.03); }
+.pwa-install-btn:active { transform: scale(0.97); }
+.pwa-install-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+/* 설치 상태 메시지 */
+.install-status {
+  font-size: 12px;
+  color: var(--text3);
+  text-align: center;
+  min-height: 16px;
+  font-family: inherit;
+}
+
+/* 수동 설치 가이드 */
+.install-guide-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.install-guide-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text3);
+  text-transform: uppercase;
+  padding: 12px 16px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+.guide-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.guide-item:last-child { border-bottom: none; }
+.guide-os-tag {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.guide-desc { color: var(--text2); line-height: 1.5; }
+
+/* 이미 설치됨 배너 */
+.installed-banner {
+  background: #e8fdf0;
+  border: 1px solid #80d8a0;
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #1a6030;
+  font-weight: 500;
+  display: none;
+}
+.installed-banner.show { display: flex; }
 
 /* install-card 재사용 (guide만 담을 때) */
 .install-card {

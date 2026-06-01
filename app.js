@@ -807,57 +807,66 @@
      PWA 설치
   ══════════════════════════════ */
   function bindPWA() {
+    var urlEl = qs('#pwa-url-display');
+    if (urlEl) urlEl.textContent = location.hostname || 'diary-app.vercel.app';
+
+    // 이미 standalone 모드 (설치됨)
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+      setInstalledState();
+      return;
+    }
+
+    // beforeinstallprompt: Chrome/Edge/Android에서 원클릭 설치 가능
     window.addEventListener('beforeinstallprompt', function (e) {
       e.preventDefault();
       deferredInstall = e;
-      updateInstallUI(true);
+      // 설치 버튼 활성화
+      var btn = qs('#btn-pwa-install');
+      if (btn) { btn.disabled = false; btn.textContent = '설치'; }
+      var status = qs('#install-status');
+      if (status) status.textContent = '';
     });
 
-    qs('#btn-pwa-install').addEventListener('click', triggerInstall);
+    // 설치 버튼 클릭
+    var installBtn = qs('#btn-pwa-install');
+    if (installBtn) {
+      installBtn.addEventListener('click', function () {
+        if (deferredInstall) {
+          // Chrome/Edge/Android: 브라우저 설치 다이얼로그 바로 호출
+          deferredInstall.prompt();
+          deferredInstall.userChoice.then(function (r) {
+            deferredInstall = null;
+            if (r.outcome === 'accepted') {
+              toast('앱 설치 중... 🎉');
+              setInstalledState();
+            } else {
+              var status = qs('#install-status');
+              if (status) status.textContent = '설치를 취소했습니다.';
+            }
+          });
+        } else {
+          // iOS/Firefox: 수동 안내 표시
+          var status = qs('#install-status');
+          if (status) status.textContent = '아래 수동 설치 방법을 따라주세요 👇';
+          toast('아래 안내를 확인해주세요 👇');
+        }
+      });
+    }
 
-    // 팝업 스타일 설치 버튼도 같은 동작
-    var popupBtn = qs('#btn-pwa-popup');
-    if (popupBtn) popupBtn.addEventListener('click', triggerInstall);
-
+    // appinstalled 이벤트
     window.addEventListener('appinstalled', function () {
       toast('앱 설치 완료! 🎉');
-      updateInstallUI(false, true);
+      setInstalledState();
     });
+  }
 
-    // 이미 설치됐으면 숨기기
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      updateInstallUI(false, true);
-    }
-
-    function triggerInstall() {
-      if (deferredInstall) {
-        deferredInstall.prompt();
-        deferredInstall.userChoice.then(function (r) {
-          if (r.outcome === 'accepted') { toast('앱이 설치됐습니다! 🎉'); updateInstallUI(false, true); }
-          else { toast('설치가 취소됐습니다'); }
-          deferredInstall = null;
-        });
-      } else {
-        // 이미 설치됐거나 지원 안 할 때
-        toast('아래 수동 설치 방법을 따라주세요 👇');
-      }
-    }
-
-    function updateInstallUI(ready, done) {
-      var popup = qs('.pwa-install-popup');
-      var btn   = qs('#btn-pwa-install');
-      var popBtn = qs('#btn-pwa-popup');
-      var status = qs('#install-status');
-      if (done) {
-        if (popup) popup.style.display = 'none';
-        if (btn) { btn.textContent = '✅ 설치됨'; btn.disabled = true; }
-        if (status) status.textContent = '이미 설치된 앱입니다';
-      } else if (ready) {
-        if (btn) btn.textContent = '📲 홈 화면에 설치하기';
-        if (popBtn) { popBtn.disabled = false; popBtn.textContent = '설치'; }
-        if (status) status.textContent = '설치 준비 완료!';
-      }
-    }
+  function setInstalledState() {
+    var popup = qs('#pwa-install-popup');
+    var banner = qs('#installed-banner');
+    var status = qs('#install-status');
+    if (popup) popup.style.display = 'none';
+    if (banner) banner.classList.add('show');
+    if (status) status.textContent = '홈 화면에서 앱을 실행할 수 있습니다.';
   }
 
   /* ══════════════════════════════
@@ -903,8 +912,3 @@
 
 })();
 
-  /* ── 설치 탭 URL 표시 ── */
-  (function () {
-    var el = document.getElementById('pwa-url-display');
-    if (el) el.textContent = location.hostname || 'diary-app.vercel.app';
-  })();
