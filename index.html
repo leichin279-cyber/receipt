@@ -1,270 +1,186 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="영수증 다이어리">
-  <meta name="theme-color" content="#1a1a1a">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="icon" href="/icons/icon.svg">
-  <link rel="apple-touch-icon" href="/icons/icon-192.png">
-  <title>영수증 다이어리</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="영수증 다이어리">
+<meta name="theme-color" content="#1a1a1a">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<title>영수증 다이어리</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="app" id="app">
 
-  <!-- ══ TAB 1: 오늘 ══ -->
-  <div class="pg on" id="pg-todo">
-    <div class="pg-inner">
-      <div class="page-header">
-        <div class="page-title">오늘의 기록</div>
-        <button class="btn-reset" id="btn-reset" title="오늘 기록 초기화">↺ 리셋</button>
-      </div>
-
-      <section class="card">
-        <div class="sec-label">□ TO-DO LIST</div>
-        <div class="tadd">
-          <input type="text" id="todo-inp" placeholder="할 일을 마구 적어보세요" autocomplete="off">
-          <button id="todo-add-btn">+</button>
-        </div>
-        <div class="tlist" id="tlist">
-          <!-- 빈 상태 안내 -->
-          <div class="empty-hint" id="todo-empty">할 일을 추가해보세요 ✏️</div>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="sec-label">★ 핵심 3가지</div>
-        <div class="plist" id="plist-todo"></div>
-      </section>
-
-      <button class="btn-primary" id="btn-checkout">결제하기 →</button>
-    </div>
+<!-- TAB1: 오늘 -->
+<div class="pg on" id="pg-todo">
+  <div class="pgi">
+    <div class="ph"><h2>오늘의 기록</h2><button class="btn-rst" id="btnReset">↺ 리셋</button></div>
+    <section class="card">
+      <div class="sl">□ To-Do List</div>
+      <div class="tadd"><input id="todoInp" type="text" placeholder="할 일을 마구 적어보세요" autocomplete="off"><button id="todoAddBtn">+</button></div>
+      <div id="tlist"><div class="empty" id="todoEmpty">할 일을 추가해보세요 ✏️</div></div>
+    </section>
+    <section class="card">
+      <div class="sl">★ 핵심 3가지</div>
+      <div class="plist" id="plTodo"></div>
+    </section>
+    <button class="btnp" id="btnCheckout">결제하기 →</button>
   </div>
-
-  <!-- ══ TAB 1-b: 영수증 뷰 ══ -->
-  <div class="pg" id="pg-receipt-view">
-    <div class="pg-inner">
-      <div class="receipt" id="receipt-area">
-        <div class="receipt-deco top"></div>
-        <div class="rtop">
-          <div class="rdt" id="rv-date"></div>
-          <h1>DAILY RECEIPT</h1>
-          <div class="rdt">자기계발 영수증</div>
-        </div>
-        <div class="r-sec">□ TO-DO LIST</div>
-        <div id="rv-todos"></div>
-        <div class="r-divider"></div>
-        <div class="r-sec">★ 핵심 3가지</div>
-        <div id="rv-prios"></div>
-        <div class="r-divider"></div>
-        <div class="r-row"><span>완료율</span><span id="rv-rate"></span></div>
-        <div class="r-row bold"><span>오늘의 달성도</span><span id="rv-score"></span></div>
-        <div class="rfoot">
-          <div class="rfoot-msg">★ 오늘도 수고했습니다 ★</div>
-          <div class="rfoot-no" id="rv-no"></div>
-        </div>
-        <div class="receipt-deco bottom"></div>
-      </div>
-      <div class="sign-card" id="sign-preview-card">
-        <div class="sign-label">SIGNATURE <span class="sign-sub">(탭하여 서명)</span></div>
-        <canvas id="scv-preview" width="400" height="70"></canvas>
-        <div class="sign-preview-hint" id="sign-preview-hint">여기를 탭하여 서명하세요 ✍️</div>
-      </div>
-      <div class="row-btns">
-        <button class="btn-outline" id="btn-back">← 뒤로가기</button>
-        <button class="btn-primary" id="btn-save-img">⬇ 이미지 저장</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ TAB 2: 스케줄 ══ -->
-  <div class="pg" id="pg-sched">
-    <div class="pg-inner">
-      <div class="page-title">시간 스케줄</div>
-      <section class="card">
-        <div class="sec-label">★ 핵심 3가지 달성 현황</div>
-        <div class="plist" id="plist-sched"></div>
-      </section>
-      <section class="card">
-        <div class="sec-label-row">
-          <span class="sec-label" style="margin:0;border:none;padding:0;">⏱ 시간 스케줄</span>
-          <button class="btn-ghost-sm" id="tr-ico">🕐 시간 범위</button>
-        </div>
-        <div class="st-outer">
-          <div class="st-wrap" id="st-wrap">
-            <div class="st-ax" id="st-ax"></div>
-            <div class="st-cv" id="st-cv"></div>
-          </div>
-          <div class="hint" id="hint-el">빈 칸 탭: 블록 추가 &nbsp;|&nbsp; 길게 탭: 수정/삭제 &nbsp;|&nbsp; ⋮ 드래그: 이동 &nbsp;|&nbsp; 상·하단 드래그: 크기</div>
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <!-- ══ TAB 3: 달력 ══ -->
-  <div class="pg" id="pg-cal">
-    <div class="pg-inner">
-      <div class="page-title">달력</div>
-      <div class="mnav">
-        <button id="cal-prev">◀</button>
-        <span id="cal-lbl"></span>
-        <button id="cal-next">▶</button>
-      </div>
-      <div class="cg" id="cgrid"></div>
-      <div id="cdet"></div>
-    </div>
-  </div>
-
-  <!-- ══ TAB 4: 설치 ══ -->
-  <div class="pg" id="pg-install">
-    <div class="pg-inner">
-      <div class="page-title">앱 설치</div>
-
-      <!-- 이미 설치됨 -->
-      <div class="installed-banner" id="installed-banner">✅ 앱이 설치되어 있습니다</div>
-
-      <!-- 브라우저 스타일 설치 카드 -->
-      <div class="pwa-card" id="pwa-install-popup">
-        <div class="pwa-icon-wrap">
-          <div class="pwa-app-icon">📋</div>
-        </div>
-        <div class="pwa-info">
-          <div class="pwa-name">영수증 다이어리</div>
-          <div class="pwa-url" id="pwa-url-display">receipt-khoe.vercel.app</div>
-        </div>
-        <button class="pwa-install-btn" id="btn-pwa-install">설치</button>
-      </div>
-      <div class="install-status" id="install-status"></div>
-
-      <!-- 수동 안내 -->
-      <div class="install-guide-card">
-        <div class="install-guide-title">설치 방법 안내</div>
-        <div class="guide-item">
-          <span class="guide-os-tag">🍎 iOS</span>
-          <span class="guide-desc">Safari → 하단 공유(□↑) → <strong>"홈 화면에 추가"</strong></span>
-        </div>
-        <div class="guide-item">
-          <span class="guide-os-tag">🤖 Android</span>
-          <span class="guide-desc">Chrome 메뉴(⋮) → <strong>"앱 설치"</strong></span>
-        </div>
-        <div class="guide-item">
-          <span class="guide-os-tag">💻 Chrome</span>
-          <span class="guide-desc">주소창 오른쪽 <strong>⊕ 설치 아이콘</strong> 클릭</span>
-        </div>
-        <div class="guide-item">
-          <span class="guide-os-tag">💻 Edge</span>
-          <span class="guide-desc">주소창 오른쪽 <strong>앱 아이콘</strong> 클릭</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ 모달들 ══ -->
-  <div class="modal-backdrop" id="ov-tr">
-    <div class="modal-box">
-      <div class="modal-title">🕐 스케줄 시간 범위</div>
-      <div class="mr"><label>시작 시간</label><select id="tr-s"></select></div>
-      <div class="mr"><label>종료 시간</label><select id="tr-e"></select></div>
-      <div class="mbs"><button id="tr-cancel">취소</button><button class="mok" id="tr-ok">적용</button></div>
-    </div>
-  </div>
-  <div class="modal-backdrop" id="ov-bl">
-    <div class="modal-box">
-      <div class="modal-title" id="bl-title">블록 추가</div>
-      <div class="mr"><label>내용</label><input type="text" id="bl-txt" placeholder="무엇을 할까요?" autocomplete="off"></div>
-      <div class="mr"><label>시작</label><select id="bl-s"></select></div>
-      <div class="mr"><label>종료</label><select id="bl-e"></select></div>
-      <div class="mbs" id="bl-btns"></div>
-    </div>
-  </div>
-  <!-- 서명 모달 -->
-  <div class="modal-backdrop" id="ov-sign">
-    <div class="modal-box modal-sign">
-      <div class="modal-title">✍️ 서명</div>
-      <div class="sign-modal-wrap"><canvas id="scv"></canvas></div>
-      <div class="mbs">
-        <button id="sign-modal-clr">다시 쓰기</button>
-        <button class="mok" id="sign-modal-ok">완료</button>
-      </div>
-    </div>
-  </div>
-  <!-- 리셋 확인 모달 -->
-  <div class="modal-backdrop" id="ov-reset">
-    <div class="modal-box">
-      <div class="modal-title">↺ 오늘 기록 초기화</div>
-      <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:4px;">
-        오늘의 To-Do, 핵심 3가지를 모두 지웁니다.<br>
-        <span style="font-size:11px;color:var(--text3);">달력의 오늘 기록도 삭제됩니다.</span>
-      </p>
-      <div class="mbs">
-        <button id="reset-cancel">취소</button>
-        <button class="mdel" id="reset-ok">초기화</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-  <canvas id="conf-cv"></canvas>
-
-  <!-- ══ 하단 탭바 ══ -->
-  <nav class="tabbar" id="tabbar">
-    <button class="tab on" data-page="pg-todo">
-      <span class="tab-icon">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="4" y="3" width="14" height="17" rx="3" stroke="currentColor" stroke-width="1.8" fill="none"/>
-          <circle cx="8" cy="8.5" r="1.2" fill="currentColor"/>
-          <line x1="11" y1="8.5" x2="15" y2="8.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <circle cx="8" cy="12" r="1.2" fill="currentColor"/>
-          <line x1="11" y1="12" x2="15" y2="12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <circle cx="8" cy="15.5" r="1.2" fill="currentColor"/>
-          <line x1="11" y1="15.5" x2="14" y2="15.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </span>
-      <span class="tab-label">오늘</span>
-    </button>
-    <button class="tab" data-page="pg-sched">
-      <span class="tab-icon">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8" fill="none"/>
-          <path d="M12 7.5V12.5L15.5 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="12" cy="12" r="1.2" fill="currentColor"/>
-        </svg>
-      </span>
-      <span class="tab-label">스케줄</span>
-    </button>
-    <button class="tab" data-page="pg-cal">
-      <span class="tab-icon">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.8" fill="none"/>
-          <path d="M3 10h18" stroke="currentColor" stroke-width="1.6"/>
-          <path d="M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <circle cx="8" cy="14.5" r="1.2" fill="currentColor"/>
-          <circle cx="12" cy="14.5" r="1.2" fill="currentColor"/>
-          <circle cx="16" cy="14.5" r="1.2" fill="currentColor"/>
-          <circle cx="8" cy="18" r="1.2" fill="currentColor"/>
-          <circle cx="12" cy="18" r="1.2" fill="currentColor"/>
-        </svg>
-      </span>
-      <span class="tab-label">달력</span>
-    </button>
-    <button class="tab" data-page="pg-install">
-      <span class="tab-icon">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="5" y="2" width="14" height="20" rx="3" stroke="currentColor" stroke-width="1.8" fill="none"/>
-          <path d="M12 7v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M9 12l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <line x1="9" y1="18" x2="15" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </span>
-      <span class="tab-label">설치</span>
-    </button>
-  </nav>
 </div>
 
+<!-- TAB1b: 영수증 -->
+<div class="pg" id="pg-rcpt">
+  <div class="pgi">
+    <div class="receipt" id="rcptArea">
+      <div class="rdeco t"></div>
+      <div class="rtop"><div class="rdt" id="rvDate"></div><h1>DAILY RECEIPT</h1><div class="rdt">자기계발 영수증</div></div>
+      <div class="rsec">□ TO-DO LIST</div><div id="rvTodos"></div>
+      <div class="rdiv"></div>
+      <div class="rsec">★ 핵심 3가지</div><div id="rvPrios"></div>
+      <div class="rdiv"></div>
+      <div class="rrow"><span>완료율</span><span id="rvRate"></span></div>
+      <div class="rrow b"><span>오늘의 달성도</span><span id="rvScore"></span></div>
+      <div class="rfoot"><div class="rfmsg">★ 오늘도 수고했습니다 ★</div><div class="rfno" id="rvNo"></div></div>
+      <div class="rdeco b"></div>
+    </div>
+    <div class="signcard" id="signPreviewCard">
+      <div class="sigl">SIGNATURE <span class="sigsub">(탭하여 서명)</span></div>
+      <canvas id="scv-prev" width="400" height="70"></canvas>
+      <div class="sighint" id="signHint">여기를 탭하여 서명하세요 ✍️</div>
+    </div>
+    <div class="rowb">
+      <button class="btno" id="btnBack">← 뒤로가기</button>
+      <button class="btnp" id="btnSaveImg" style="margin-top:0">⬇ 이미지 저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- TAB2: 스케줄 -->
+<div class="pg" id="pg-sched">
+  <div class="pgi">
+    <div class="ph"><h2>시간 스케줄</h2></div>
+    <section class="card">
+      <div class="sl">★ 핵심 3가지 달성 현황</div>
+      <div class="plist" id="plSched"></div>
+    </section>
+    <section class="card">
+      <div class="slr"><span class="sl" style="margin:0;border:none;padding:0">⏱ 시간 스케줄</span><button class="btng" id="btnTR">🕐 시간 범위</button></div>
+      <div class="stout">
+        <div class="stwrap" id="stWrap"><div class="stax" id="stAx"></div><div class="stcv" id="stCv"></div></div>
+        <div class="hint">빈 칸 탭: 블록 추가 | 길게 탭: 수정/삭제 | ⋮ 드래그: 이동 | 상·하단: 크기</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- TAB3: 달력 -->
+<div class="pg" id="pg-cal">
+  <div class="pgi">
+    <div class="ph"><h2>달력</h2></div>
+    <div class="mnav"><button id="calPrev">◀</button><span id="calLbl"></span><button id="calNext">▶</button></div>
+    <div class="cg" id="cgrid"></div>
+    <div id="cdet"></div>
+  </div>
+</div>
+
+<!-- TAB4: 설치 -->
+<div class="pg" id="pg-inst">
+  <div class="pgi">
+    <div class="ph"><h2>앱 설치</h2></div>
+    <div class="inst-done" id="instDone">✅ 앱이 설치되어 있습니다</div>
+    <div class="pwa-card" id="pwaCard">
+      <div class="pwa-appicon"><img src="/icons/icon-192.png" alt="" onerror="this.parentElement.textContent='📋'"></div>
+      <div class="pwa-info"><div class="pwa-name">영수증 다이어리</div><div class="pwa-url" id="pwaUrl">receipt-khoe.vercel.app</div></div>
+      <button class="pwa-btn" id="btnInstall" disabled>대기 중</button>
+    </div>
+    <div class="inst-status" id="instStatus"></div>
+    <div class="guide-card">
+      <div class="guide-head">설치 방법 안내</div>
+      <div class="guide-row"><span class="gtag">🍎 iOS</span><span class="gdesc">Safari → 하단 공유(□↑) → <strong>"홈 화면에 추가"</strong></span></div>
+      <div class="guide-row"><span class="gtag">🤖 Android</span><span class="gdesc">Chrome 메뉴(⋮) → <strong>"앱 설치"</strong></span></div>
+      <div class="guide-row"><span class="gtag">💻 Chrome</span><span class="gdesc">주소창 오른쪽 <strong>⊕ 설치 아이콘</strong> 클릭</span></div>
+      <div class="guide-row"><span class="gtag">💻 Edge</span><span class="gdesc">주소창 오른쪽 <strong>앱 아이콘</strong> 클릭</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 모달들 -->
+<div class="mbackdrop" id="mReset">
+  <div class="mbox"><div class="mtitle">↺ 오늘 기록 초기화</div>
+  <p style="font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:4px">To-Do와 핵심 3가지를 모두 초기화합니다.</p>
+  <div class="mbtns"><button id="mResetCancel">취소</button><button class="mdel" id="mResetOk">초기화</button></div></div>
+</div>
+<div class="mbackdrop" id="mTR">
+  <div class="mbox"><div class="mtitle">🕐 스케줄 시간 범위</div>
+  <div class="mr"><label>시작 시간</label><select id="trS"></select></div>
+  <div class="mr"><label>종료 시간</label><select id="trE"></select></div>
+  <div class="mbtns"><button id="mTRCancel">취소</button><button class="mok" id="mTROk">적용</button></div></div>
+</div>
+<div class="mbackdrop" id="mBlock">
+  <div class="mbox"><div class="mtitle" id="mBlockTitle">블록 추가</div>
+  <div class="mr"><label>내용</label><input type="text" id="blTxt" placeholder="무엇을 할까요?" autocomplete="off"></div>
+  <div class="mr"><label>시작</label><select id="blS"></select></div>
+  <div class="mr"><label>종료</label><select id="blE"></select></div>
+  <div class="mbtns" id="blBtns"></div></div>
+</div>
+<div class="mbackdrop" id="mSign">
+  <div class="mbox sign"><div class="mtitle">✍️ 서명</div>
+  <div class="signwrap"><canvas id="scv"></canvas></div>
+  <div class="mbtns"><button id="signClr">다시 쓰기</button><button class="mok" id="signOk">완료</button></div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<canvas id="confcv"></canvas>
+
+<!-- 탭바 -->
+<nav class="tabbar">
+  <button class="tab on" data-pg="pg-todo">
+    <span class="tab-ic">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="3" width="14" height="18" rx="3"/><circle cx="9" cy="9" r="1.1" fill="currentColor" stroke="none"/>
+        <line x1="12" y1="9" x2="16" y2="9"/><circle cx="9" cy="13" r="1.1" fill="currentColor" stroke="none"/>
+        <line x1="12" y1="13" x2="16" y2="13"/><circle cx="9" cy="17" r="1.1" fill="currentColor" stroke="none"/>
+        <line x1="12" y1="17" x2="15" y2="17"/>
+      </svg>
+    </span>
+    <span class="tab-lb">오늘</span>
+  </button>
+  <button class="tab" data-pg="pg-sched">
+    <span class="tab-ic">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14.5"/>
+        <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
+      </svg>
+    </span>
+    <span class="tab-lb">스케줄</span>
+  </button>
+  <button class="tab" data-pg="pg-cal">
+    <span class="tab-ic">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="5" width="18" height="16" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/>
+        <line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/>
+        <circle cx="8" cy="15" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="15" r="1.2" fill="currentColor" stroke="none"/>
+        <circle cx="16" cy="15" r="1.2" fill="currentColor" stroke="none"/><circle cx="8" cy="19" r="1.2" fill="currentColor" stroke="none"/>
+        <circle cx="12" cy="19" r="1.2" fill="currentColor" stroke="none"/>
+      </svg>
+    </span>
+    <span class="tab-lb">달력</span>
+  </button>
+  <button class="tab" data-pg="pg-inst">
+    <span class="tab-ic">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="3"/>
+        <line x1="12" y1="7" x2="12" y2="15"/><polyline points="9 12 12 15 15 12"/>
+        <line x1="9" y1="19" x2="15" y2="19"/>
+      </svg>
+    </span>
+    <span class="tab-lb">설치</span>
+  </button>
+</nav>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="app.js"></script>
 </body>

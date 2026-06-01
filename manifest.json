@@ -1,14 +1,17 @@
 {
-  "name": "자기계발 영수증 다이어리",
-  "short_name": "영수증 다이어리",
-  "description": "매일 할 일과 핵심 목표를 영수증 형식으로 기록하는 자기계발 다이어리",
+  "name": "영수증 다이어리",
+  "short_name": "영수증",
+  "description": "매일 할 일과 핵심 목표를 영수증으로 기록하는 자기계발 다이어리",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f2f2f2",
+  "background_color": "#f0f0f0",
   "theme_color": "#1a1a1a",
   "orientation": "portrait-primary",
+  "prefer_related_applications": false,
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
